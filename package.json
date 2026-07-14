@@ -1,0 +1,17 @@
+{
+  "name": "keyauth-ad-bridge",
+  "version": "1.0.0",
+  "description": "Secure 3-step ad wall bridge to KeyAuth registry generation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "express": "^4.19.0",
+    "express-session": "^1.18.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
