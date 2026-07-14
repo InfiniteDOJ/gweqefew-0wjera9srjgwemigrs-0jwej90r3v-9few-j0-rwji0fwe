@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>License Key Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111215;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .wrapper {
+            background-color: #1a1b20;
+            border: 1px solid #2b2c34;
+            border-radius: 8px;
+            padding: 40px;
+            width: 380px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        h2 { margin-top: 0; color: #5865F2; }
+        p { color: #b9bbbe; font-size: 14px; line-height: 1.6; }
+        .action-button {
+            background-color: #5865F2;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 0;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: background 0.2s ease;
+        }
+        .action-button:hover { background-color: #4752c4; }
+        .action-button:disabled { background-color: #3b3c44; cursor: not-allowed; }
+        .key-field {
+            margin-top: 25px;
+            background-color: #090a0c;
+            border: 1px dashed #43b581;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 15px;
+            color: #43b581;
+            border-radius: 4px;
+            display: none;
+            user-select: all;
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <h2>Access Token Gateway</h2>
+    <p id="prompt-message">Complete the 3 verification milestones inside the ad network links to receive your 14-day premium software license key.</p>
+    
+    <button id="gate-button" class="action-button" onclick="executeGatewayAction()">Start Verification (0/3)</button>
+    <div id="license-display" class="key-field"></div>
+</div>
+
+<script>
+    const parameters = new URLSearchParams(window.location.search);
+    const verificationReady = parameters.get('status') === 'ready';
+
+    const gateButton = document.getElementById('gate-button');
+    const promptMessage = document.getElementById('prompt-message');
+    const licenseDisplay = document.getElementById('license-display');
+
+    if (verificationReady) {
+        gateButton.innerText = "Claim 2-Week License";
+        promptMessage.innerText = "Milestones verification approved! Press the action button below to render your dynamic key.";
+    }
+
+    async function executeGatewayAction() {
+        if (verificationReady) {
+            gateButton.disabled = true;
+            gateButton.innerText = "Requesting token registry...";
+            try {
+                const query = await fetch('/api/claim-key', { method: 'POST' });
+                const parse = await query.json();
+                
+                if (parse.success) {
+                    licenseDisplay.innerText = parse.key;
+                    licenseDisplay.style.display = 'block';
+                    gateButton.style.display = 'none';
+                    promptMessage.innerText = "Success! Copy your temporary 2-week active license below:";
+                } else {
+                    alert(parse.error || "Execution registry failure.");
+                    gateButton.disabled = false;
+                    gateButton.innerText = "Claim 2-Week License";
+                }
+            } catch (err) {
+                alert("Communication error during live authentication processing.");
+                gateButton.disabled = false;
+            }
+        } else {
+            window.location.href = '/api/start';
+        }
+    }
+</script>
+
+</body>
+</html>
